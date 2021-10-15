@@ -31,7 +31,7 @@ var ownersCmd = &cobra.Command{
 			panic(err)
 		}
 
-		if err := table.Print([]string{"Name", "Email", "Type"}, owners); err != nil {
+		if err := table.Print([]string{"Id", "Name", "Email", "Type"}, owners); err != nil {
 			panic(err)
 		}
 	},
