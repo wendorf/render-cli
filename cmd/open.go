@@ -1,12 +1,9 @@
 package cmd
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 
-	"github.com/renderinc/cli/pkg/http"
-	"github.com/renderinc/cli/pkg/table"
 	"github.com/spf13/cobra"
 	"github.com/skratchdot/open-golang/open"
 )
@@ -26,28 +23,14 @@ var openCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		serviceId := args[0]
 		cds := customDomains(serviceId)
+		var url string
 		if len(cds) != 0 {
-			if err := open.Run(fmt.Sprintf("https://%s", cds[0].Name)); err != nil {
-				panic(err)
-			}
-			return
+			url = fmt.Sprintf("https://%s", cds[0].Name)
+		} else {
+			svc := service(serviceId)
+			url = fmt.Sprintf("https://%s.onrender.com", svc.Slug)
 		}
-
-		svc := service(serviceId)
-		if err := open.Run(fmt.Sprintf("https://%s.onrender.com", svc.Slug)); err != nil {
-			panic(err)
-		}
-		jsonString, err := http.Request(fmt.Sprintf("services/%s", serviceId))
-		if err != nil {
-			panic(err)
-		}
-
-		var service Service
-		if err := json.Unmarshal(jsonString, &service); err != nil {
-			panic(err)
-		}
-
-		if err := table.Print([]string{"Id", "Name", "Type", "State"}, []Service{service}); err != nil {
+		if err := open.Run(url); err != nil {
 			panic(err)
 		}
 	},
