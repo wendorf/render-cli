@@ -17,8 +17,7 @@ func Request(endpoint string) ([]byte, error) {
 	}
 
 	req.Header.Set("Accept", "application/json")
-	api := viper.GetString("api")
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", api))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiToken()))
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("requesting endpoint %s: %w", endpoint, err)
@@ -40,8 +39,7 @@ func Create(endpoint string, body []byte) ([]byte, error) {
 	}
 
 	req.Header.Set("Accept", "application/json")
-	api := viper.GetString("api")
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", api))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiToken()))
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("requesting endpoint %s: %w", endpoint, err)
@@ -53,4 +51,12 @@ func Create(endpoint string, body []byte) ([]byte, error) {
 	}
 
 	return jsonString, nil
+}
+
+func apiToken() string {
+	api := viper.GetString("api")
+	if api == "" {
+		panic("you must set a token before you can make requests")
+	}
+	return api
 }
