@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/renderinc/cli/pkg/http"
 	"github.com/renderinc/cli/pkg/table"
@@ -40,12 +39,10 @@ var createServiceCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(string(bodyBytes))
 		jsonString, err := http.Create("services", bodyBytes)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(string(jsonString))
 
 		var service Service
 		if err := json.Unmarshal(jsonString, &service); err != nil {
