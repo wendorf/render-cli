@@ -45,22 +45,7 @@ var customDomainsCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		serviceId := args[0]
-		jsonString, err := http.Request(fmt.Sprintf("services/%s/custom-domains", serviceId))
-		if err != nil {
-			panic(err)
-		}
-
-		var cursorCustomDomains []CursorCustomDomain
-		if err := json.Unmarshal(jsonString, &cursorCustomDomains); err != nil {
-			panic(err)
-		}
-
-		var customDomains []CustomDomain
-		for _, cursorCustomDomain := range cursorCustomDomains {
-			customDomains = append(customDomains, cursorCustomDomain.CustomDomain)
-		}
-
-		if err := table.Print([]string{"Id", "Name", "CreatedAt"}, customDomains); err != nil {
+		if err := table.Print([]string{"Id", "Name", "CreatedAt"}, customDomains(serviceId)); err != nil {
 			panic(err)
 		}
 	},
@@ -68,4 +53,22 @@ var customDomainsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(customDomainsCmd)
+}
+
+func customDomains(serviceId string) []CustomDomain {
+	jsonString, err := http.Request(fmt.Sprintf("services/%s/custom-domains", serviceId))
+	if err != nil {
+		panic(err)
+	}
+
+	var cursorCustomDomains []CursorCustomDomain
+	if err := json.Unmarshal(jsonString, &cursorCustomDomains); err != nil {
+		panic(err)
+	}
+
+	var customDomains []CustomDomain
+	for _, cursorCustomDomain := range cursorCustomDomains {
+		customDomains = append(customDomains, cursorCustomDomain.CustomDomain)
+	}
+	return customDomains
 }

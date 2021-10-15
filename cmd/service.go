@@ -24,17 +24,8 @@ var serviceCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		serviceId := args[0]
-		jsonString, err := http.Request(fmt.Sprintf("services/%s", serviceId))
-		if err != nil {
-			panic(err)
-		}
 
-		var service Service
-		if err := json.Unmarshal(jsonString, &service); err != nil {
-			panic(err)
-		}
-
-		if err := table.Print([]string{"Id", "Name", "Type", "State"}, []Service{service}); err != nil {
+		if err := table.Print([]string{"Id", "Name", "Type", "State"}, []Service{service(serviceId)}); err != nil {
 			panic(err)
 		}
 	},
@@ -42,4 +33,18 @@ var serviceCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(serviceCmd)
+}
+
+func service(serviceId string) Service {
+	jsonString, err := http.Request(fmt.Sprintf("services/%s", serviceId))
+	if err != nil {
+		panic(err)
+	}
+
+	var service Service
+	if err := json.Unmarshal(jsonString, &service); err != nil {
+		panic(err)
+	}
+
+	return service
 }
